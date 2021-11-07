@@ -1,0 +1,66 @@
+WindowManager:
+    MainWindow:
+    SecondWindow:
+
+<MainWindow>:
+    name:"main"
+    canvas.before:
+        Color:
+            rgba:(1,1,1,1)
+        Rectangle:
+            pos:self.pos
+            size:self.size
+
+
+###############################################
+
+    # Adding Box Layoyt
+    BoxLayout:
+        size_hint: [.9, .9]
+        pos_hint: { 'top' : .95, 'right': .95}
+        orientation: 'vertical'
+
+        # Adding image from the system
+        Image:
+            source: 'tts.png'
+            # Giving the size of image
+            size_hint: 1.4, 1.4
+            # allow stretching of image
+            allow_stretch: True
+            pos_hint: {'center_x': 0.5, 'center_y': 0.75}
+
+
+        # Giving Label to images
+        Label:
+            text:"Welcome To"
+            font_size:30
+            bold:True
+            color:(0/255, 200/255, 247/255, 0.7)
+
+        Label:
+            text:"[b]RECOGNIZE & SAY IT[/b]"
+            font_size:50
+            bold:True
+            color:(0, 155/255, 255/255, 1)
+            font_name:"Regular"
+            markup: True
+        Label:
+            text:"APPLICATION"
+            font_size:30
+            bold:True
+            color:(0/255, 200/255, 247/255, 0.7)
+
+<SecondWindow>:
+    name:"Second"
+    Button:
+        text:"Go Back!"
+        on_release:
+            app.root.current="main"
+            root.manager.transition.direction="right"
+
+        Button:
+            text:"Scann a new image "
+            # Change the default color to your choice
+            background_color: 0.1, 0.5, 0.6, 1
+            pos_hint: {"x":0.2, "y":.4}
+            size_hint: 0.3, 0.2
