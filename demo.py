@@ -55,6 +55,7 @@ ScreenManager:
     CheckScreen:
     ProcessScreen:
     SayItSecreen:
+    ConcatInfo:
 
 
 <WelcomeScreen>:
@@ -106,35 +107,80 @@ ScreenManager:
 
 <HomeScreen>:
     name: 'home'
+    BoxLayout:
+        orientation: 'vertical'
+        # just change the points of the tow tringles
+        canvas.before:      
+            Color:
+                rgba: rgba('#EFEFEF')
+            Triangle:
+                points:[0, self.size[1] ,self.size[0],0, 0, 0]
+                
+            Color:
+                rgba: rgba('#DAE5FA')
+            Triangle:
+                points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
+              
     MDLabel: 
         text: 'Recognize & Say it'
+        # halign: 'center'
+        # pos_hint: {'center_x':0.5,'center_y':0.91}
+        # color: 0,0,0, 1
         halign: 'center'
-        pos_hint: {'center_x':0.5,'center_y':0.91}
-        color: 0,0,0, 1
+        pos_hint: {'center_x':0.5,'center_y':0.95}
+        background_color: (243/255 , 243/255 , 243/255 ,1)
+        size_hint: 1, 0.1
+        font_size: self.width/20
+        canvas.before:
+            Color: 
+                rgba: self.background_color
+            Rectangle:
+                size : self.size
+                pos: self.pos
 
 
     Image:
-        source:'tts.png'
-        halign: 'center' 
-        pos_hint: {'center_x':0.5,'center_y':0.73}
+        source: 'tts.png'
+        # Giving the size of image
+        size_hint: 0.7, 0.7
+        # allow stretching of image
+        allow_stretch: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.65}
 
-    MDRaisedButton:
+    # MDRaisedButton:
+    MDRectangleFlatButton:
+        # need background color
         text: 'Scanning a new image '
         size_hint: (.5, .11)
         pos_hint: {'center_x':0.5,'center_y':0.4}
-        md_bg_color: 0,0,0, 1
+        # md_bg_color: 0,0,0, 1
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+        line_color: 0, 0, 0, 1
+        # color: 0,0,0, 1
+        # md_bg_color:222/255 , 222/255 ,222/255 ,1
         on_press: root.manager.current='camerapage'
-
+        
+    # need draw line
+    
     MDRectangleFlatButton:
         text: 'contact us '
         size_hint: (.31, .08)
         pos_hint: {'center_x':0.3,'center_y':0.2}  
-        on_press: root.manager.current='welcome'
+        on_press: root.manager.current='concat'
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+        line_color: 0, 0, 0, 0
+
     MDRectangleFlatButton:
         text: 'instructions '
         size_hint: (.31, .08)
         pos_hint: {'center_x':0.7,'center_y':0.2}  
-        on_press: root.manager.current='welcome' 
+        on_press: root.manager.current='welcome'  
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+        line_color: 0, 0, 0, 0  
+ 
                
 
 <CheckScreen>:
@@ -163,17 +209,40 @@ ScreenManager:
 
 <ProcessScreen>:
     name: 'processpage'
-
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:      
+            Color:
+                rgba: rgba('#EFEFEF')
+            Triangle:
+                points:[0, self.size[1] ,self.size[0],0, 0, 0]
+            Color:
+                rgba: rgba('#DAE5FA')
+            Triangle:
+                points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
     MDLabel:    
         text: 'Recognize & Say it'
+        # halign: 'center'
+        # pos_hint: {'center_x':0.5,'center_y':0.91}
         halign: 'center'
-        pos_hint: {'center_x':0.5,'center_y':0.91}
+        pos_hint: {'center_x':0.5,'center_y':0.95}
+        background_color: (243/255 , 243/255 , 243/255 ,1)
+        size_hint: 1, 0.1
+        font_size: self.width/20
+        canvas.before:
+            Color: 
+                rgba: self.background_color
+            Rectangle:
+                size : self.size
+                pos: self.pos
 
 
     Image:
-        source: "test_images/4.jpeg"
+        source: "test_images/4.png"
         # source: '(%s)'%(app.picture_taken)
-        halign: 'center' 
+        halign: 'center'
+        # we need size 
+        size: self.texture_size 
         pos_hint: {'center_x':0.5,'center_y':0.6}
 
 
@@ -190,14 +259,36 @@ ScreenManager:
 
 <SayItSecreen>:
     name: 'sayitpage'
-
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:      
+            Color:
+                rgba: rgba('#EFEFEF')
+            Triangle:
+                points:[0, self.size[1] ,self.size[0],0, 0, 0]
+                
+            Color:
+                rgba: rgba('#DAE5FA')
+            Triangle:
+                points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
+                           
     MDLabel:    
         text: 'Recognize & Say it'
         halign: 'center'
-        pos_hint: {'center_x':0.5,'center_y':0.91}
+        # pos_hint: {'center_x':0.5,'center_y':0.91}
+        pos_hint: {'center_x':0.5,'center_y':0.95}
+        background_color: (243/255 , 243/255 , 243/255 ,1)
+        size_hint: 1, 0.1
+        font_size: self.width/20
+        canvas.before:
+            Color: 
+                rgba: self.background_color
+            Rectangle:
+                size : self.size
+                pos: self.pos
 
     # Image:
-    #     source: "test_result/4.jpeg"
+    #     source: "test_result/4.png"
     #     halign: 'center' 
     #     pos_hint: {'center_x':0.5,'center_y':0.6}
     Label:
@@ -220,7 +311,46 @@ ScreenManager:
         pos_hint: {'center_x':0.7,'center_y':0.2}  
         on_press: root.manager.current='home'
 
-
+ 
+<ConcatInfo>:
+    name: 'concat'
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:      
+            Color:
+                rgba: rgba('#EFEFEF')
+            Triangle:
+                points:[0, self.size[1] ,self.size[0],0, 0, 0]
+                
+            Color:
+                rgba: rgba('#DAE5FA')
+            Triangle:
+                points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
+                           
+    MDLabel:    
+        text: 'Concat Information'
+        halign: 'center'
+        pos_hint: {'center_x':0.5,'center_y':0.95}
+        background_color: (243/255 , 243/255 , 243/255 ,1)
+        size_hint: 1, 0.1
+        font_size: self.width/20
+        canvas.before:
+            Color: 
+                rgba: self.background_color
+            Rectangle:
+                size : self.size
+                pos: self.pos
+        
+    MDRectangleFlatButton:
+        text: 'Home Page '
+        size_hint: (.31, .08)
+        pos_hint: {'center_x':0.5,'center_y':0.2}  
+        on_press: root.manager.current='home'
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+        line_color: 0, 0, 0, 1
+    
+    
 
 
 
@@ -254,7 +384,8 @@ class SayItSecreen(Screen):
     def on_pre_enter(self, *args):
         MainApp.showText(self)
     pass
-
+class ConcatInfo(Screen):
+    pass
 
 sm = ScreenManager()
 sm.add_widget(WelcomeScreen(name='welcome'))
@@ -262,7 +393,7 @@ sm.add_widget(HomeScreen(name='home'))
 sm.add_widget(CheckScreen(name='camerapage'))
 sm.add_widget(ProcessScreen(name='processpage'))
 sm.add_widget(SayItSecreen(name='sayitpage'))
-
+sm.add_widget(ConcatInfo(name='concat'))
 
 def single_pic_proc(image_file):
     image = np.array(PIL.Image.open(image_file).convert('RGB'))
@@ -321,8 +452,8 @@ class MainApp(MDApp):
                 txt_f.write(result[key][1] + '\n')
             # MainApp.showText(txt_f)
             # ++++++++++++++++++++++++++++++++++
-            txt_f.flush()
-            os.fsync(txt_f.fileno())
+            # txt_f.flush()
+            # os.fsync(txt_f.fileno())
             # ++++++++++++++++++++++++++++++++++
             txt_f.close()
 
