@@ -7,9 +7,7 @@ import numpy as np
 import PIL.Image
 from glob import glob
 import pyttsx3
-from kivy.app import App
-from kivy.clock import Clock
-from kivy.uix.label import Label
+from kivy.uix.camera import Camera
 # !/usr/bin/env python
 from kivymd.app import MDApp
 from kivy.uix.label import Label
@@ -35,13 +33,11 @@ from kivy.uix.floatlayout import FloatLayout
 from os.path import dirname
 from kivymd.theming import ThemeManager
 from kivy.properties import StringProperty
-from kivymd.icon_definitions import md_icons
-from kivy.config import Config
-from kivy.core.text import LabelBase
 
 LabelBase.register(name="Regular",
                    fn_regular="KaushanScript-Regular.otf")
-txt_file=""
+txt_file = ""
+
 try:
     from android.permissions import request_permissions, check_permission, \
         Permission
@@ -52,23 +48,31 @@ except:
 Window.clearcolor = (1, 1, 1, 1)
 Window.size = (360, 600)
 
-screen_helper = """
-#: import XCamera kivy.garden.xcamera.XCamera
+Builder.load_string("""
 
-ScreenManager:
+#: import rgba kivy.utils.rgba
+
+<ScreenManager>:
     WelcomeScreen:
+        name:"welcome"
     HomeScreen:
+        name:"home"       
     CheckScreen:
+        name:"camera" 
+        id: entry
     ProcessScreen:
+        name:"process"       
     SayItSecreen:
-    ConcatInfo:
+        name:"sayit"
 
+    ConcatInfo:
+        name:"concat"
 
 <WelcomeScreen>:
-        # on_release: app.startWelcomingPage()
+    # on_release: app.startWelcomingPage()
 
-    name: 'welcome' 
-    
+
+
     # Adding Box Layoyt
     BoxLayout:
         size_hint: [.9, .9]
@@ -104,10 +108,6 @@ ScreenManager:
             font_size:30
             bold:True
             color:(0/255, 200/255, 247/255, 0.7)
-    # MDRectangleFlatButton:
-    #     text: 'Start '
-    #     pos_hint: {'center_x':0.5,'center_y':0.2}  
-    #     on_press: root.manager.current='home'
 
 
 
@@ -121,12 +121,12 @@ ScreenManager:
                 rgba: rgba('#EFEFEF')
             Triangle:
                 points:[0, self.size[1] ,self.size[0],0, 0, 0]
-                
+
             Color:
                 rgba: rgba('#DAE5FA')
             Triangle:
                 points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
-              
+
     MDLabel: 
         text: 'Recognize & Say it'
         # halign: 'center'
@@ -146,12 +146,9 @@ ScreenManager:
 
 
     Image:
-        source: 'logo.png'
-        # Giving the size of image
-        size_hint: 0.7, 0.7
-        # allow stretching of image
-        allow_stretch: True
-        pos_hint: {'center_x': 0.5, 'center_y': 0.65}
+        source:'logo.png'
+        halign: 'center' 
+        pos_hint: {'center_x':0.5,'center_y':0.73}
 
     # MDRaisedButton:
     MDRectangleFlatButton:
@@ -165,10 +162,10 @@ ScreenManager:
         line_color: 0, 0, 0, 1
         # color: 0,0,0, 1
         # md_bg_color:222/255 , 222/255 ,222/255 ,1
-        on_press: root.manager.current='camerapage'
-        
+        on_press: root.manager.current='camera'
+
     # need draw line
-    
+
     MDRectangleFlatButton:
         text: 'contact us '
         size_hint: (.31, .08)
@@ -185,36 +182,44 @@ ScreenManager:
         on_press: root.manager.current='welcome'  
         theme_text_color: "Custom"
         text_color: 0, 0, 0, 1
-        line_color: 0, 0, 0, 0  
- 
-               
+        line_color: 0, 0, 0, 0 
 
 <CheckScreen>:
-    name:'camerapage'
+    name:'camera'
+    id: entry
 
-
-    XCamera:
-        id: xcamera
-        on_picture_taken: 
-            app.picture_taken(*args)
-            root.manager.current='processpage'
-            on_cemera_ready: app.cemera_ready()
-
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint: 1, None
-
-        height: sp(50)
-
-        Button:
-            text: 'Back'
-            on_release: root.manager.current='home' 
-
+    canvas:
+        Color:
+            rgb: [.30,.50,.99]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    FloatLayout:
+        Camera:
+            id: camera
+            index: 0
+            resolution: (1280,720)
+            play: True  
+        MDFillRoundFlatButton:
+            text: "take photo"
+            pos_hint: {'center_x': 0.50, 'center_y': .10}
+            on_press:
+                root.capture()   #TAKE PHOTO
+                root.manager.transition.direction = 'up'
+                root.manager.transition.duration = 1
+                root.manager.current = 'process'    
+        MDIconButton:
+            icon: 'chevron-double-right'
+            pos_hint: {'center_x':.95, 'center_y':.10}
+            on_press:
+                root.manager.transition.direction = 'down'
+                root.manager.transition.duration = 1
+                root.manager.current = 'home'
 
 
 
 <ProcessScreen>:
-    name: 'processpage'
+    name: 'process'
     BoxLayout:
         orientation: 'vertical'
         canvas.before:      
@@ -222,10 +227,66 @@ ScreenManager:
                 rgba: rgba('#EFEFEF')
             Triangle:
                 points:[0, self.size[1] ,self.size[0],0, 0, 0]
+
             Color:
                 rgba: rgba('#DAE5FA')
             Triangle:
                 points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
+
+    MDLabel:    
+        text: 'Recognize & Say it'
+        # halign: 'center'
+        # pos_hint: {'center_x':0.5,'center_y':0.91}
+        halign: 'center'
+        pos_hint: {'center_x':0.5,'center_y':0.95}
+        background_color: (243/255 , 243/255 , 243/255 ,1)
+        size_hint: 1, 0.1
+        font_size: self.width/20
+        canvas.before:
+            Color: 
+                rgba: self.background_color
+            Rectangle:
+                size : self.size
+                pos: self.pos
+    FloatLayout:
+        Image:
+            id: img
+            halign: 'center' 
+             # we need size 
+            #size: self.texture_size
+            pos_hint: {'center_x':0.5,'center_y':0.6}
+
+
+    MDRectangleFlatButton:
+        text: 'process '
+        size_hint: (.31, .08)
+        pos_hint: {'center_x':0.3,'center_y':0.2}  
+        on_press: root.manager.current='sayit'; app.Demo()
+
+
+    MDRectangleFlatButton:
+        text: 'Home Page '
+        size_hint: (.31, .08)
+        pos_hint: {'center_x':0.7,'center_y':0.2}  
+        on_press: root.manager.current='home'
+
+
+<SayItSecreen>:
+    name: 'sayit'
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:      
+            Color:
+                rgba: rgba('#EFEFEF')
+            Triangle:
+                points:[0, self.size[1] ,self.size[0],0, 0, 0]
+
+            Color:
+                rgba: rgba('#DAE5FA')
+            Triangle:
+                points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
+
+
     MDLabel:    
         text: 'Recognize & Say it'
         # halign: 'center'
@@ -242,61 +303,6 @@ ScreenManager:
                 size : self.size
                 pos: self.pos
 
-
-    Image:
-        source: "test_images/4.png"
-        # source: '(%s)'%(app.picture_taken)
-        halign: 'center'
-        # we need size 
-        size: self.texture_size 
-        pos_hint: {'center_x':0.5,'center_y':0.6}
-
-
-    MDRectangleFlatButton:
-        text: 'process '
-        size_hint: (.31, .08)
-        pos_hint: {'center_x':0.3,'center_y':0.2}  
-        on_press: root.manager.current='sayitpage'
-    MDRectangleFlatButton:
-        text: 'Home Page '
-        size_hint: (.31, .08)
-        pos_hint: {'center_x':0.7,'center_y':0.2}  
-        on_press: root.manager.current='home'
-
-<SayItSecreen>:
-    name: 'sayitpage'
-    BoxLayout:
-        orientation: 'vertical'
-        canvas.before:      
-            Color:
-                rgba: rgba('#EFEFEF')
-            Triangle:
-                points:[0, self.size[1] ,self.size[0],0, 0, 0]
-                
-            Color:
-                rgba: rgba('#DAE5FA')
-            Triangle:
-                points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
-                           
-    MDLabel:    
-        text: 'Recognize & Say it'
-        halign: 'center'
-        # pos_hint: {'center_x':0.5,'center_y':0.91}
-        pos_hint: {'center_x':0.5,'center_y':0.95}
-        background_color: (243/255 , 243/255 , 243/255 ,1)
-        size_hint: 1, 0.1
-        font_size: self.width/20
-        canvas.before:
-            Color: 
-                rgba: self.background_color
-            Rectangle:
-                size : self.size
-                pos: self.pos
-
-    # Image:
-    #     source: "test_result/4.png"
-    #     halign: 'center' 
-    #     pos_hint: {'center_x':0.5,'center_y':0.6}
     Label:
         id: Label1
         font_size:30
@@ -317,7 +323,6 @@ ScreenManager:
         pos_hint: {'center_x':0.7,'center_y':0.2}  
         on_press: root.manager.current='home'
 
- 
 <ConcatInfo>:
     name: 'concat'
     BoxLayout:
@@ -327,12 +332,12 @@ ScreenManager:
                 rgba: rgba('#EFEFEF')
             Triangle:
                 points:[0, self.size[1] ,self.size[0],0, 0, 0]
-                
+
             Color:
                 rgba: rgba('#DAE5FA')
             Triangle:
                 points:[0, self.size[1],self.size[0]-(.3*self.size[1]),self.size[1], 0,self.size[1]-(.4*self.size[1])]
-                           
+
     MDLabel:    
         text: 'Concat Information'
         halign: 'center'
@@ -346,59 +351,7 @@ ScreenManager:
             Rectangle:
                 size : self.size
                 pos: self.pos
-    MDLabel:
-        text: 'If you have any comments or suggestions, please contact us :'
-        # halign: 'center'
-        pos_hint: {'center_x':0.60,'center_y':0.80}
-        # background_color: (243/255 , 243/255 , 243/255 ,1)
-        size_hint: 1, 0.1
-        font_size: self.width/20
-        padding_x: 30
-    Image:
-        source: 'twitter.png'
-        # Giving the size of image
-        size_hint: 0.1, 0.1
-        # allow stretching of image
-        allow_stretch: True
-        pos_hint: {'center_x': 0.2, 'center_y': 0.70}
-    MDLabel:
-        text: '@RecognizeAndSayIt'
-        # halign: 'center'
-        pos_hint: {'center_x': 0.75, 'center_y': 0.70}
-        # background_color: (243/255 , 243/255 , 243/255 ,1)
-        size_hint: 1, 0.1
-        font_size: self.width/27
-        padding_x: 20
-    Image:
-        source: 'email.png'
-        # Giving the size of image
-        size_hint: 0.09, 0.09
-        # allow stretching of image
-        allow_stretch: True
-        pos_hint: {'center_x': 0.2, 'center_y': 0.60}
-    MDLabel:
-        text: 'RecognizeAndSayIt@gmail.com'
-        # halign: 'center'
-        pos_hint: {'center_x': 0.75, 'center_y': 0.60}
-        # background_color: (243/255 , 243/255 , 243/255 ,1)
-        size_hint: 1, 0.1
-        font_size: self.width/27
-        padding_x: 20
-    Image:
-        source: 'phone.png'
-        # Giving the size of image
-        size_hint: 0.06, 0.06
-        # allow stretching of image
-        allow_stretch: True
-        pos_hint: {'center_x': 0.2, 'center_y': 0.507}
-    MDLabel:
-        text: '+966530956125'
-        # halign: 'center'
-        pos_hint: {'center_x': 0.75, 'center_y': 0.50}
-        # background_color: (243/255 , 243/255 , 243/255 ,1)
-        size_hint: 1, 0.1
-        font_size: self.width/27
-        padding_x: 20
+
     MDRectangleFlatButton:
         text: 'Home Page '
         size_hint: (.31, .08)
@@ -406,15 +359,14 @@ ScreenManager:
         on_press: root.manager.current='home'
         theme_text_color: "Custom"
         text_color: 0, 0, 0, 1
-        line_color: 0, 0, 0, 1
-    
-    
+        line_color: 0, 0, 0, 1    
 
 
 
 
 
-"""
+
+""")
 
 
 class WelcomeScreen(Screen):
@@ -431,27 +383,39 @@ class HomeScreen(Screen):
 
 
 class CheckScreen(Screen):
-    pass
+    theme_cls = ThemeManager()
+    theme_cls.primary_palette = 'Blue'
+    main_widget = None
+    photo = StringProperty('')
+
+    def capture(self):
+        camera = self.ids['camera']
+        self.photo = f"test_images/IMG_{time.strftime('%Y%m%d_%H%M%S')}.png"
+        camera.export_to_png(self.photo)
+
+        print("Captured")
 
 
 class ProcessScreen(Screen):
-    pass
+
+    def on_pre_enter(self, *args):
+        self.ids.img.source = self.manager.ids.entry.photo
 
 
 class SayItSecreen(Screen):
     def on_pre_enter(self, *args):
         MainApp.showText(self)
+
     pass
+
+
 class ConcatInfo(Screen):
     pass
 
-sm = ScreenManager()
-sm.add_widget(WelcomeScreen(name='welcome'))
-sm.add_widget(HomeScreen(name='home'))
-sm.add_widget(CheckScreen(name='camerapage'))
-sm.add_widget(ProcessScreen(name='processpage'))
-sm.add_widget(SayItSecreen(name='sayitpage'))
-sm.add_widget(ConcatInfo(name='concat'))
+
+class ScreenManagement(ScreenManager):
+    pass
+
 
 def single_pic_proc(image_file):
     image = np.array(PIL.Image.open(image_file).convert('RGB'))
@@ -460,30 +424,8 @@ def single_pic_proc(image_file):
 
 
 class MainApp(MDApp):
-
     def build(self):
-        screen = Builder.load_string(screen_helper)
-        return screen
-
-    def on_start(self):
-        if platform == 'android':
-            self.root.ids.xcamera.index = 0
-            request_permissions([Permission.WRITE_EXTERNAL_STORAGE,
-                                 Permission.CAMERA],
-                                self.setup_storage)
-            self.setup_storage([], [])
-        # Clock.schedule_once(HomeScreen, 5)
-
-    # def startWelcomingPage(self):
-    #     Clock.schedule_once(self, 13)
-    def cemera_ready(self):
-        pass
-
-    def picture_taken(self, obj, filename):
-        print('Picture taken and saved to {}'.format(filename))
-        global ImageName
-        ImageName = '{}'.format(filename)
-        return ImageName
+        return ScreenManagement()
 
     def Demo(self):
         image_files = glob('./test_images/*.*')
@@ -496,31 +438,21 @@ class MainApp(MDApp):
         for image_file in sorted(image_files):
             t = time.time()
             result, image_framed = single_pic_proc(image_file)
+            global output_file
             output_file = os.path.join(result_dir, image_file.split('/')[-1])
             global txt_file
             txt_file = os.path.join(result_dir, image_file.split('/')[-1].split('.')[0])
             print(txt_file)
             txt_f = open(txt_file + '.txt', 'w')
             PIL.Image.fromarray(image_framed).save(output_file)  # save the detect image
+
             print("Mission complete, it took {:.3f}s".format(time.time() - t))
             print("\nRecognition Result:\n")
             # print all the containt in images
             for key in result:
                 print(result[key][1])
                 txt_f.write(result[key][1] + '\n')
-            # MainApp.showText(txt_f)
-            # ++++++++++++++++++++++++++++++++++
-            # txt_f.flush()
-            # os.fsync(txt_f.fileno())
-            # ++++++++++++++++++++++++++++++++++
             txt_f.close()
-
-    def showText(self):
-        # with open('Noura.txt', 'r') as f:
-        #         self.ids['Label1'].text = f.read()
-        MainApp.Demo(self)
-        with open(txt_file + '.txt', 'r') as f:
-            self.ids['Label1'].text = f.read()
 
     def play_music(self):
         with open(txt_file + '.txt', 'r') as f:
@@ -529,14 +461,21 @@ class MainApp(MDApp):
             engine.setProperty("rate", 150)
             voices = engine.getProperty("voices")
             engine.setProperty("voice", voices[1].id)
-            # engine.save_to_file(line, txt_file + '.mp3')
-            engine.say(line)
+            engine.save_to_file(line, txt_file + '.mp3')
+            # engine.say(line)
             engine.runAndWait()
-        # music = SoundLoader.load('test_result/4.mp3')
-        # if music:
-        #     music.play()
+        music = SoundLoader.load(txt_file + '.mp3')
+        if music:
+            music.play()
+
+    def showText(self):
+        # with open('Noura.txt', 'r') as f:
+        #         self.ids['Label1'].text = f.read()
+        MainApp.Demo(self)
+        with open(txt_file + '.txt', 'r') as f:
+            self.ids['Label1'].text = f.read()
 
 
 if __name__ == '__main__':
     MainApp().run()
-    print(ImageName)
+    print("")
